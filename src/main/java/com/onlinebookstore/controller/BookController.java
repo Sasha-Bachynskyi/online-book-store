@@ -2,6 +2,7 @@ package com.onlinebookstore.controller;
 
 import com.onlinebookstore.dto.BookDto;
 import com.onlinebookstore.dto.BookRequestDto;
+import com.onlinebookstore.dto.BookSearchParametersDto;
 import com.onlinebookstore.service.BookService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -46,5 +47,10 @@ public class BookController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         bookService.deleteById(id);
+    }
+
+    @GetMapping("/search")
+    public List<BookDto> search(BookSearchParametersDto searchParametersDto) {
+        return bookService.search(searchParametersDto);
     }
 }
