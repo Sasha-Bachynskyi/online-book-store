@@ -7,7 +7,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PriceToSpecificationProvider implements SpecificationProvider<Book> {
+public class PriceToSpecificationProvider
+        implements SpecificationProvider<Book, BookSearchParametersDto> {
     public static final String PRICE = "price";
     public static final String PRICE_TO = "priceTo";
 
