@@ -10,12 +10,14 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class BookSpecificationBuilder implements SpecificationBuilder<Book> {
+public class BookSpecificationBuilder
+        implements SpecificationBuilder<Book, BookSearchParametersDto> {
     private static final String TITLE = "title";
     private static final String AUTHOR = "author";
     private static final String PRICE_FROM = "priceFrom";
     private static final String PRICE_TO = "priceTo";
-    private final SpecificationProviderManager<Book> specificationProviderManager;
+    private final SpecificationProviderManager<Book,
+            BookSearchParametersDto> specificationProviderManager;
 
     @Override
     public Specification<Book> build(BookSearchParametersDto searchParametersDto) {
