@@ -8,7 +8,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TitleSpecificationProvider implements SpecificationProvider<Book> {
+public class TitleSpecificationProvider
+        implements SpecificationProvider<Book, BookSearchParametersDto> {
     private static final String TITLE = "title";
 
     @Override
