@@ -1,5 +1,6 @@
 package com.onlinebookstore.repository.book;
 
+import com.onlinebookstore.dto.BookSearchParametersDto;
 import com.onlinebookstore.model.Book;
 import com.onlinebookstore.repository.SpecificationProvider;
 import com.onlinebookstore.repository.SpecificationProviderManager;
@@ -10,11 +11,14 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class BookSpecificationProviderManager implements SpecificationProviderManager<Book> {
-    private final List<SpecificationProvider<Book>> bookSpecificationProviders;
+public class BookSpecificationProviderManager
+        implements SpecificationProviderManager<Book, BookSearchParametersDto> {
+    private final List<SpecificationProvider<Book,
+            BookSearchParametersDto>> bookSpecificationProviders;
 
     @Override
-    public SpecificationProvider<Book> getSpecificationProvider(String key) {
+    public SpecificationProvider<Book, BookSearchParametersDto> getSpecificationProvider(
+            String key) {
         return bookSpecificationProviders.stream()
                 .filter(p -> p.getKey().equals(key))
                 .findFirst()

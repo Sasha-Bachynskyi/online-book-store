@@ -1,10 +1,9 @@
 package com.onlinebookstore.repository;
 
-import com.onlinebookstore.dto.BookSearchParametersDto;
 import org.springframework.data.jpa.domain.Specification;
 
-public interface SpecificationProvider<T> {
+public interface SpecificationProvider<T, P> {
     String getKey();
 
-    Specification<T> getSpecification(BookSearchParametersDto searchParametersDto);
+    Specification<T> getSpecification(P parameters);
 }
