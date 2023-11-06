@@ -44,6 +44,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void update(Long id, BookRequestDto requestDto) {
+        getBookById(id);
         Book book = bookMapper.toModel(requestDto);
         book.setId(id);
         bookRepository.save(book);
