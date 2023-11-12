@@ -43,6 +43,13 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(RegistrationException.class)
+    protected ResponseEntity<Object> handleRegistration(RegistrationException ex) {
+        Map<String, Object> body = createErrorBody(HttpStatus.INTERNAL_SERVER_ERROR,
+                Collections.singletonList(ex.getMessage()));
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
     private String getErrorMessage(ObjectError error) {
         String message = error.getDefaultMessage();
         if (error instanceof FieldError) {
