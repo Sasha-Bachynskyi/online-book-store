@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto register(UserRegistrationRequestDto requestDto)
             throws RegistrationException {
         if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
-            throw new RegistrationException("Unable to complete registration");
+            throw new RegistrationException("Such email exists. Unable to complete registration");
         }
         User user = new User();
         user.setEmail(requestDto.getEmail());
