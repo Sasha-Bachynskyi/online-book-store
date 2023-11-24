@@ -12,7 +12,6 @@ import com.onlinebookstore.repository.book.BookRepository;
 import com.onlinebookstore.repository.book.BookSpecificationBuilder;
 import com.onlinebookstore.repository.category.CategoryRepository;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -47,16 +46,21 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto getBookById(Long id) {
-        Optional<Book> optionalBook = bookRepository.findById(id);
-        return bookMapper.toDto(optionalBook.orElseThrow(
+        return bookMapper.toDto(bookRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Couldn't find Book by id " + id)));
     }
 
     @Override
     public void update(Long id, BookRequestDto requestDto) {
-        getBookById(id);
-        Book book = bookMapper.toModel(requestDto);
-        book.setId(id);
+        Book book = bookRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Couldn't find Book by id " + id)
+        );
+        book.setTitle(requestDto.getTitle());
+        book.setAuthor(requestDto.getAuthor());
+        book.setIsbn(requestDto.getIsbn());
+        book.setPrice(requestDto.getPrice());
+        book.setDescription(requestDto.getDescription());
+        book.setCoverImage(requestDto.getCoverImage());
         if (!CollectionUtils.isEmpty(requestDto.getCategoryIds())) {
             book.setCategories(getCategoriesByIds(requestDto.getCategoryIds()));
         }
