@@ -46,8 +46,6 @@ public class User implements UserDetails {
     @Column(name = "shipping_address")
     private String shippingAddress;
 
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 

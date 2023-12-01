@@ -9,6 +9,7 @@ import com.onlinebookstore.service.cartitem.CartItemService;
 import com.onlinebookstore.service.shoppingcart.ShoppingCartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,7 +41,7 @@ public class ShoppingCartController {
     @Operation(summary = "Add cart item",
             description = "Add cart item into the user's shopping cart")
     public CartItemDto saveCartItem(Authentication authentication,
-                                    @RequestBody CartItemRequestDto requestDto) {
+                                    @RequestBody @Valid CartItemRequestDto requestDto) {
         User user = (User) authentication.getPrincipal();
         return cartItemService.save(user.getId(), requestDto);
     }
@@ -49,7 +50,7 @@ public class ShoppingCartController {
     @Operation(summary = "Update cart item",
             description = "Update cart item in the user's shopping cart")
     public void updateCartItem(@PathVariable Long cartItemId,
-                               @RequestBody CartItemUpdateRequestDto requestDto) {
+                               @RequestBody @Valid CartItemUpdateRequestDto requestDto) {
         cartItemService.update(cartItemId, requestDto);
     }
 
