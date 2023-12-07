@@ -53,8 +53,6 @@ public class Book {
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories;
 
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 }
