@@ -51,6 +51,8 @@ public class User implements UserDetails {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
