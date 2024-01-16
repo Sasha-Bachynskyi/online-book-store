@@ -1,5 +1,12 @@
 package com.onlinebookstore.controller;
 
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlinebookstore.dto.book.BookDtoWithoutCategoryIds;
 import com.onlinebookstore.dto.category.CategoryDto;
@@ -30,24 +37,17 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CategoryControllerTest {
     protected static MockMvc mockMvc;
-    @Autowired
-    private ObjectMapper mapper;
     private static CategoryRequestDto requestDto;
     private static CategoryRequestDto invalidRequestDto;
     private static CategoryRequestDto updateRequestDto;
     private static CategoryDto horrorDto;
     private static CategoryDto fantasyDto;
     private static BookDtoWithoutCategoryIds bookDto;
+    @Autowired
+    private ObjectMapper mapper;
 
     @BeforeAll
     public static void beforeAll(@Autowired DataSource dataSource,
@@ -64,9 +64,11 @@ public class CategoryControllerTest {
             ScriptUtils.executeSqlScript(connection,
                     new ClassPathResource("database/books/add-two-book-to-books-table.sql"));
             ScriptUtils.executeSqlScript(connection,
-                    new ClassPathResource("database/categories/add-one-category-to-categories-table.sql"));
+                    new ClassPathResource("database/categories/"
+                            + "add-one-category-to-categories-table.sql"));
             ScriptUtils.executeSqlScript(connection,
-                    new ClassPathResource("database/books_categories/add-one-book-and-one-category-to-books-categories-table.sql"));
+                    new ClassPathResource("database/books_categories/"
+                            + "add-one-book-and-one-category-to-books-categories-table.sql"));
         }
 
         requestDto = new CategoryRequestDto();
@@ -100,11 +102,13 @@ public class CategoryControllerTest {
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(true);
             ScriptUtils.executeSqlScript(connection,
-                    new ClassPathResource("database/books_categories/remove-one-book-and-one-category-from-books-categories-table.sql"));
+                    new ClassPathResource("database/books_categories/"
+                            + "remove-one-book-and-one-category-from-books-categories-table.sql"));
             ScriptUtils.executeSqlScript(connection,
                     new ClassPathResource("database/books/remove-two-book-from-books-table.sql"));
             ScriptUtils.executeSqlScript(connection,
-                    new ClassPathResource("database/categories/remove-one-category-from-categories-table.sql"));
+                    new ClassPathResource("database/categories/"
+                            + "remove-one-category-from-categories-table.sql"));
         }
     }
 
@@ -123,7 +127,8 @@ public class CategoryControllerTest {
                 .andExpect(status().isCreated())
                 .andReturn();
 
-        CategoryDto actual = mapper.readValue(result.getResponse().getContentAsString(), CategoryDto.class);
+        CategoryDto actual = mapper.readValue(result.getResponse()
+                .getContentAsString(), CategoryDto.class);
 
         Assertions.assertNotNull(actual);
         Assertions.assertNotNull(actual.id());
@@ -176,7 +181,8 @@ public class CategoryControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        CategoryDto actual = mapper.readValue(result.getResponse().getContentAsString(), CategoryDto.class);
+        CategoryDto actual = mapper.readValue(result.getResponse()
+                .getContentAsString(), CategoryDto.class);
 
         Assertions.assertEquals(fantasyDto, actual);
     }

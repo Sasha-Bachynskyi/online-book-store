@@ -1,5 +1,12 @@
 package com.onlinebookstore.controller;
 
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlinebookstore.dto.book.BookDto;
 import com.onlinebookstore.dto.book.BookRequestDto;
@@ -30,18 +37,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BookControllerTest {
     protected static MockMvc mockMvc;
-    @Autowired
-    private ObjectMapper mapper;
     private static BookRequestDto requestDto;
     private static BookDto bookDto;
     private static BookDto harryBookDto;
@@ -49,6 +47,8 @@ public class BookControllerTest {
     private static BookDto gatsbyBookDto;
     private static BookRequestDto invalidRequestDto;
     private static BookSearchParametersDto searchParametersDto;
+    @Autowired
+    private ObjectMapper mapper;
 
     @BeforeAll
     public static void beforeAll(@Autowired DataSource dataSource,
@@ -104,7 +104,10 @@ public class BookControllerTest {
         gatsbyBookDto.setIsbn("0-061-95636-0");
         gatsbyBookDto.setPrice(BigDecimal.valueOf(16));
 
-        searchParametersDto = new BookSearchParametersDto(null, new String[]{"J. K. Rowling"}, null, null);
+        searchParametersDto = new BookSearchParametersDto(null,
+                new String[]{"J. K. Rowling"},
+                null,
+                null);
     }
 
     @AfterAll
@@ -126,7 +129,7 @@ public class BookControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
     @Sql(scripts = "classpath:database/books/delete-frankenstein-book.sql",
-        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @DisplayName("Verify save() method works")
     void save_ValidRequestDto_Success() throws Exception {
         String jsonRequest = mapper.writeValueAsString(requestDto);

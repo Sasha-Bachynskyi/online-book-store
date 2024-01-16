@@ -1,5 +1,7 @@
 package com.onlinebookstore.service;
 
+import static org.mockito.ArgumentMatchers.anyLong;
+
 import com.onlinebookstore.dto.category.CategoryDto;
 import com.onlinebookstore.dto.category.CategoryRequestDto;
 import com.onlinebookstore.exception.EntityNotFoundException;
@@ -22,10 +24,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-
 @ExtendWith(MockitoExtension.class)
 public class CategoryServiceTest {
+    private static Pageable pageable;
+    private static CategoryRequestDto requestDto;
+    private static Category category;
+    private static CategoryDto categoryDto;
+    private static CategoryRequestDto updatedRequestDto;
+    private static Category updatedCategory;
     @InjectMocks
     private CategoryServiceImpl categoryService;
     @Mock
@@ -33,33 +39,32 @@ public class CategoryServiceTest {
     @Mock
     private CategoryMapper categoryMapper;
 
-    private static final Pageable pageable = PageRequest.of(0, 10);
-    private static final CategoryRequestDto requestDto = new CategoryRequestDto();
-    private static final Category category = new Category();
-    private static CategoryDto categoryDto;
-    private static final CategoryRequestDto updatedRequestDto = new CategoryRequestDto();
-    private static final Category updatedCategory = new Category();
-
-
     @BeforeAll
     public static void beforeAll() {
+        pageable = PageRequest.of(0, 10);
+
+        requestDto = new CategoryRequestDto();
         requestDto.setName("Fantasy");
 
+        category = new Category();
         category.setId(1L);
         category.setName(requestDto.getName());
 
         categoryDto = new CategoryDto(category.getId(), category.getName(), null);
 
+        updatedRequestDto = new CategoryRequestDto();
         updatedRequestDto.setName("Novel");
 
+        updatedCategory = new Category();
         updatedCategory.setId(category.getId());
         updatedCategory.setName(updatedRequestDto.getName());
     }
 
     @Test
     @DisplayName("Verify getAll() method works")
-    void getAll_ValidCategories_ShouldReturnCategoryDtoList() {
-        Mockito.when(categoryRepository.findAll(pageable)).thenReturn(new PageImpl<>(List.of(category)));
+    void getAll_ValidCategories_Success() {
+        Mockito.when(categoryRepository.findAll(pageable))
+                .thenReturn(new PageImpl<>(List.of(category)));
         Mockito.when(categoryMapper.toDto(category)).thenReturn(categoryDto);
 
         List<CategoryDto> expected = List.of(categoryDto);
@@ -71,8 +76,9 @@ public class CategoryServiceTest {
 
     @Test
     @DisplayName("Verify getById() method works")
-    void getById_ValidCategoryId_ShouldReturnCategoryDto() {
-        Mockito.when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
+    void getById_ValidCategoryId_Success() {
+        Mockito.when(categoryRepository.findById(category.getId()))
+                .thenReturn(Optional.of(category));
         Mockito.when(categoryMapper.toDto(category)).thenReturn(categoryDto);
 
         CategoryDto actual = categoryService.getById(category.getId());
@@ -101,7 +107,7 @@ public class CategoryServiceTest {
 
     @Test
     @DisplayName("Verify save() method works")
-    void save_ValidCategoryRequestDto_ReturnsCategoryDto() {
+    void save_ValidCategoryRequestDto_Success() {
         Mockito.when(categoryMapper.toModel(requestDto)).thenReturn(category);
         Mockito.when(categoryRepository.save(category)).thenReturn(category);
         Mockito.when(categoryMapper.toDto(category)).thenReturn(categoryDto);
@@ -115,12 +121,14 @@ public class CategoryServiceTest {
     @Test
     @DisplayName("Verify update() method works")
     void update_ValidCategoryId_Success() {
-        Mockito.when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
+        Mockito.when(categoryRepository.findById(category.getId()))
+                .thenReturn(Optional.of(category));
         Mockito.when(categoryRepository.save(updatedCategory)).thenReturn(updatedCategory);
 
         categoryService.update(category.getId(), updatedRequestDto);
 
-        Mockito.verify(categoryRepository, Mockito.times(1)).save(updatedCategory);
+        Mockito.verify(categoryRepository, Mockito.times(1))
+                .save(updatedCategory);
     }
 
     @Test
@@ -147,6 +155,7 @@ public class CategoryServiceTest {
 
         categoryService.deleteById(category.getId());
 
-        Mockito.verify(categoryRepository, Mockito.times(1)).deleteById(category.getId());
+        Mockito.verify(categoryRepository, Mockito.times(1))
+                .deleteById(category.getId());
     }
 }

@@ -18,14 +18,17 @@ public class BookRepositoryTest {
     private BookRepository bookRepository;
 
     @Test
-    @DisplayName("Verify findAllByCategoriesId() method with valid category id should return book list")
+    @DisplayName("Verify findAllByCategoriesId() method "
+            + "with valid category id should return book list")
     @Sql(scripts = {
             "classpath:database/books/add-two-book-to-books-table.sql",
             "classpath:database/categories/add-one-category-to-categories-table.sql",
-            "classpath:database/books_categories/add-one-book-and-one-category-to-books-categories-table.sql"
+            "classpath:database/books_categories/"
+                    + "add-one-book-and-one-category-to-books-categories-table.sql"
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = {
-            "classpath:database/books_categories/remove-one-book-and-one-category-from-books-categories-table.sql",
+            "classpath:database/books_categories/"
+                    + "remove-one-book-and-one-category-from-books-categories-table.sql",
             "classpath:database/categories/remove-one-category-from-categories-table.sql",
             "classpath:database/books/remove-two-book-from-books-table.sql"
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -38,7 +41,8 @@ public class BookRepositoryTest {
     }
 
     @Test
-    @DisplayName("Verify findAllByCategoriesId() method with invalid category id should return empty list")
+    @DisplayName("Verify findAllByCategoriesId() method "
+            + "with invalid category id should return empty list")
     @Sql(scripts = {
             "classpath:database/books/add-two-book-to-books-table.sql",
             "classpath:database/categories/add-one-category-to-categories-table.sql"

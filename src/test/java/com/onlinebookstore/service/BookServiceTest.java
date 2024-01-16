@@ -1,5 +1,7 @@
 package com.onlinebookstore.service;
 
+import static org.mockito.ArgumentMatchers.anyLong;
+
 import com.onlinebookstore.dto.book.BookDto;
 import com.onlinebookstore.dto.book.BookDtoWithoutCategoryIds;
 import com.onlinebookstore.dto.book.BookRequestDto;
@@ -27,17 +29,24 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
-import static org.mockito.ArgumentMatchers.anyLong;
-
-
 @ExtendWith(MockitoExtension.class)
 public class BookServiceTest {
+    private static BookRequestDto requestDto;
+    private static BookRequestDto requestDtoNonExistentCategoryIds;
+    private static BookRequestDto updatedRequestDto;
+    private static Book book;
+    private static Book updatedBook;
+    private static Category existentCategory;
+    private static BookDto bookDto;
+    private static BookDtoWithoutCategoryIds bookDtoWithoutCategoryIds;
+    private static Category nonExistentCategory;
+    private static Pageable pageable;
+    private static BookSearchParametersDto searchParametersDto;
     @InjectMocks
     private BookServiceImpl bookService;
     @Mock
@@ -51,29 +60,20 @@ public class BookServiceTest {
     @Mock
     private TitleSpecificationProvider titleSpecificationProvider;
 
-    private static final BookRequestDto requestDto = new BookRequestDto();
-    private static final BookRequestDto requestDtoNonExistentCategoryIds = new BookRequestDto();
-    private static final BookRequestDto updatedRequestDto = new BookRequestDto();
-    private static final Book book = new Book();
-    private static final Book updatedBook = new Book();
-    private static final Category existentCategory = new Category();
-    private static final BookDto bookDto = new BookDto();
-    private static final BookDtoWithoutCategoryIds bookDtoWithoutCategoryIds = new BookDtoWithoutCategoryIds();
-    private static final Category nonExistentCategory = new Category();
-    private static final Pageable pageable = PageRequest.of(0, 10);
-    private static BookSearchParametersDto searchParametersDto;
-
     @BeforeAll
     public static void initBeforeAll() {
+        existentCategory = new Category();
         existentCategory.setId(1L);
         existentCategory.setName("Fantasy");
 
+        requestDto = new BookRequestDto();
         requestDto.setTitle("Harry Potter and the Philosopher's Stone");
         requestDto.setAuthor("J. K. Rowling");
         requestDto.setIsbn("0-061-96436-0");
         requestDto.setPrice(BigDecimal.valueOf(10.99));
         requestDto.setCategoryIds(Set.of(existentCategory.getId()));
 
+        book = new Book();
         book.setId(1L);
         book.setTitle(requestDto.getTitle());
         book.setAuthor(requestDto.getAuthor());
@@ -81,6 +81,7 @@ public class BookServiceTest {
         book.setPrice(requestDto.getPrice());
         book.setCategories(Set.of(existentCategory));
 
+        bookDto = new BookDto();
         bookDto.setId(book.getId());
         bookDto.setTitle(book.getTitle());
         bookDto.setAuthor(book.getAuthor());
@@ -88,26 +89,31 @@ public class BookServiceTest {
         bookDto.setPrice(book.getPrice());
         bookDto.setCategoryIds(Set.of(1L));
 
+        bookDtoWithoutCategoryIds = new BookDtoWithoutCategoryIds();
         bookDtoWithoutCategoryIds.setId(book.getId());
         bookDtoWithoutCategoryIds.setTitle(book.getTitle());
         bookDtoWithoutCategoryIds.setAuthor(book.getAuthor());
         bookDtoWithoutCategoryIds.setIsbn(book.getIsbn());
         bookDtoWithoutCategoryIds.setPrice(book.getPrice());
 
+        nonExistentCategory = new Category();
         nonExistentCategory.setId(100L);
 
+        requestDtoNonExistentCategoryIds = new BookRequestDto();
         requestDtoNonExistentCategoryIds.setTitle(requestDto.getTitle());
         requestDtoNonExistentCategoryIds.setAuthor(requestDto.getAuthor());
         requestDtoNonExistentCategoryIds.setIsbn(requestDto.getIsbn());
         requestDtoNonExistentCategoryIds.setPrice(requestDto.getPrice());
         requestDtoNonExistentCategoryIds.setCategoryIds(Set.of(nonExistentCategory.getId()));
 
+        updatedRequestDto = new BookRequestDto();
         updatedRequestDto.setTitle(requestDto.getTitle());
         updatedRequestDto.setAuthor(requestDto.getAuthor());
         updatedRequestDto.setIsbn(requestDto.getIsbn());
         updatedRequestDto.setPrice(BigDecimal.valueOf(8.95));
         updatedRequestDto.setCategoryIds(Set.of(existentCategory.getId()));
 
+        updatedBook = new Book();
         updatedBook.setId(book.getId());
         updatedBook.setTitle(book.getTitle());
         updatedBook.setAuthor(book.getAuthor());
@@ -117,11 +123,13 @@ public class BookServiceTest {
 
         searchParametersDto = new BookSearchParametersDto(new String[]{requestDto.getTitle()},
                 null, null, null);
+
+        pageable = PageRequest.of(0, 10);
     }
 
     @Test
     @DisplayName("Verify save() method works")
-    public void save_ValidBookRequestDto_ReturnsBookDto() {
+    public void save_ValidBookRequestDto_Success() {
         Mockito.when(bookMapper.toModel(requestDto)).thenReturn(book);
         Mockito.when(categoryRepository.findById(existentCategory.getId()))
                 .thenReturn(Optional.of(existentCategory));
@@ -156,7 +164,7 @@ public class BookServiceTest {
 
     @Test
     @DisplayName("Verify getAll() method works")
-    void getAll_ValidBooks_ShouldReturnBookDtoList() {
+    void getAll_ValidBooks_Success() {
         Mockito.when(bookRepository.findAll(pageable)).thenReturn(new PageImpl<>(List.of(book)));
         Mockito.when(bookMapper.toDto(book)).thenReturn(bookDto);
 
@@ -169,7 +177,7 @@ public class BookServiceTest {
 
     @Test
     @DisplayName("Verify getBookById() method works")
-    void getBookById_ValidBookId_ShouldReturnBookDto() {
+    void getBookById_ValidBookId_Success() {
         Mockito.when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
         Mockito.when(bookMapper.toDto(book)).thenReturn(bookDto);
 
@@ -235,14 +243,17 @@ public class BookServiceTest {
 
         bookService.deleteById(book.getId());
 
-        Mockito.verify(bookRepository, Mockito.times(1)).deleteById(book.getId());
+        Mockito.verify(bookRepository, Mockito.times(1))
+                .deleteById(book.getId());
     }
 
     @Test
     @DisplayName("Verify search() method works")
-    void search_ValidBookSearchParameterDto_ShouldReturnBookDto() {
-        Specification<Book> titleSpecification = titleSpecificationProvider.getSpecification(searchParametersDto);
-        Mockito.when(bookSpecificationBuilder.build(searchParametersDto)).thenReturn(titleSpecification);
+    void search_ValidBookSearchParameterDto_Success() {
+        Specification<Book> titleSpecification = titleSpecificationProvider
+                .getSpecification(searchParametersDto);
+        Mockito.when(bookSpecificationBuilder.build(searchParametersDto))
+                .thenReturn(titleSpecification);
         Mockito.when(bookRepository.findAll(titleSpecification)).thenReturn(List.of(book));
         Mockito.when(bookMapper.toDto(book)).thenReturn(bookDto);
 
@@ -255,22 +266,27 @@ public class BookServiceTest {
 
     @Test
     @DisplayName("Verify getBooksByCategoryId() method works")
-    void getBooksByCategoryId_ValidCategoryId_ShouldReturnBookDtos() {
-        Mockito.when(bookRepository.findAllByCategoriesId(existentCategory.getId())).thenReturn(List.of(book));
-        Mockito.when(bookMapper.toDtoWithoutCategories(book)).thenReturn(bookDtoWithoutCategoryIds);
+    void getBooksByCategoryId_ValidCategoryId_Success() {
+        Mockito.when(bookRepository.findAllByCategoriesId(existentCategory.getId()))
+                .thenReturn(List.of(book));
+        Mockito.when(bookMapper.toDtoWithoutCategories(book))
+                .thenReturn(bookDtoWithoutCategoryIds);
 
         List<BookDtoWithoutCategoryIds> expected = List.of(bookDtoWithoutCategoryIds);
-        List<BookDtoWithoutCategoryIds> actual = bookService.getBooksByCategoryId(existentCategory.getId());
+        List<BookDtoWithoutCategoryIds> actual = bookService
+                .getBooksByCategoryId(existentCategory.getId());
 
         Assertions.assertEquals(expected, actual);
         Mockito.verifyNoMoreInteractions(bookRepository, bookMapper);
     }
 
     @Test
-    @DisplayName("Verify getBooksByCategoryId() with non existent category id should return empty list")
+    @DisplayName("Verify getBooksByCategoryId() "
+            + "with non existent category id should return empty list")
     void getBooksByCategoryId_InvalidCategoryId_ShouldReturnEmptyList() {
         Long categoryId = anyLong();
-        Mockito.when(bookRepository.findAllByCategoriesId(categoryId)).thenReturn(Collections.emptyList());
+        Mockito.when(bookRepository.findAllByCategoriesId(categoryId))
+                .thenReturn(Collections.emptyList());
 
         List<BookDtoWithoutCategoryIds> expected = Collections.emptyList();
         List<BookDtoWithoutCategoryIds> actual = bookService.getBooksByCategoryId(categoryId);
