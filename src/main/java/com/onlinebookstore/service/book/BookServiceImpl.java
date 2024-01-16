@@ -31,7 +31,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDto save(BookRequestDto requestDto) {
         Book book = bookMapper.toModel(requestDto);
-        if (CollectionUtils.isEmpty(requestDto.getCategoryIds())) {
+        if (!CollectionUtils.isEmpty(requestDto.getCategoryIds())) {
             book.setCategories(getCategoriesByIds(requestDto.getCategoryIds()));
         }
         return bookMapper.toDto(bookRepository.save(book));
